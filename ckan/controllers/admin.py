@@ -129,6 +129,8 @@ class AdminController(base.BaseController):
             model.Revision).filter_by(state=model.State.DELETED)
         c.deleted_packages = model.Session.query(
             model.Package).filter_by(state=model.State.DELETED)
+        c.deleted_organizations = model.Session.query(
+            model.Group).filter_by(state=model.State.DELETED)
         if not request.params or (len(request.params) == 1 and '__no_cache__'
                                   in request.params):
             return base.render('admin/trash.html')
@@ -180,6 +182,21 @@ class AdminController(base.BaseController):
                         model.repo.purge_revision(revision, leave_record=False)
                     except Exception, inst:
                         msg = _('Problem purging revision %s: %s') % (id, inst)
+                        msgs.append(msg)
+                h.flash_success(_('Purge complete'))
+            elif 'purge-org' in request.params:
+                orgs_to_purge = []
+                orgs_to_purge = [org.id for org in c.deleted_organizations]
+                orgs_to_purge = list(set(orgs_to_purge))
+                for id in orgs_to_purge:
+                    organization = model.Session.query(model.Group).get(id)
+                    try:
+                        # TODO deleting the head revision corrupts the edit
+                        # page Ensure that whatever 'head' pointer is used
+                        # gets moved down to the next revision
+                        model.repo.purge_revision(organization, leave_record=False)
+                    except Exception, inst:
+                        msg = _('Problem purging organization %s: %s') % (id, inst)
                         msgs.append(msg)
                 h.flash_success(_('Purge complete'))
             else:
