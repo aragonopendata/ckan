@@ -17,24 +17,7 @@
       value="purge"
       class="btn btn-danger"
       >
-      {% trans %}Purge Datasets{% endtrans %}
-    </button>
-    <br>
-    <br>
-    <ul class="user-list">
-    {% for org in c.deleted_organizations %}
-      {% set title = org.title or org.name %}
-      <li>{{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='organization', action='read', id=org.name)) }}</li>
-    {% endfor %}
-
-  </ul>
-    <button
-      type="submit"
-      name="purge-org"
-      value="purge-org"
-      class="btn btn-danger"
-      >
-      {% trans %}Purge Organizations{% endtrans %}
+      {% trans %}Purge{% endtrans %}
     </button>
   </form>
 {% endblock %}
